@@ -2,6 +2,7 @@ const express = require('express');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
+let authenticatedUser = require("./auth_users.js").authenticatedUser;
 const public_users = express.Router();
 
 public_users.post("/register", (req,res) => {
@@ -51,6 +52,58 @@ public_users.get('/author/:author',function (req, res) {
     } else {
         return res.status(401).json({message: "Author not found"});
     }
+});
+// PUT a review
+public_users.put("/auth/review/:isbn", (req,res) => {
+    const username = req.body.username;
+    const review = req.body.review;
+    const isbn=req.params.isbn;
+    if (username) {
+        if (isValid(username)) {
+            let reviews = books[isbn].reviews;
+            if (reviews){
+                for (rev in reviews){
+                    if (rev == username){
+                        books[isbn]["reviews"][rev]=review;
+                        return res.status(200).json({message: "Review successfully registred"});
+                    }
+                }
+                books[isbn]["reviews"][username] = review;
+            } else {
+                res.send("Unable to find book");
+            }
+            return reviews, res.status(200).json({message: "Review successfully registred"});
+        } else {
+            return res.status(404).json({message: "User invalid!"});
+        }
+    } 
+    return res.status(404).json({message: "Unable to register review."});
+});
+
+// DELETE a review
+public_users.delete("/auth/review/:isbn", (req,res) => {
+    const username = req.body.username;
+    const review = req.body.review;
+    const isbn=req.params.isbn;
+    if (username) {
+        if (isValid(username)) {
+            let reviews = books[isbn].reviews;
+            if (reviews){
+                for (rev in reviews){
+                    if (rev == username){
+                        delete books[isbn]["reviews"][rev];
+                        return res.status(200).json({message: "Review successfully deleted"});
+                    }
+                }
+            } else {
+                res.send("Unable to find book");
+            }
+            return reviews, res.status(200).json({message: "Review successfully deleted"});
+        } else {
+            return res.status(404).json({message: "User invalid!"});
+        }
+    } 
+    return res.status(404).json({message: "Unable to delete review."});
 });
 
 // Get all books based on title

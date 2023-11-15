@@ -8,7 +8,7 @@ let users = [];
 const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
     let userswithsamename = users.filter((user)=>{
-        return user.username === username
+        return user.username === username;
     });
     if(userswithsamename.length > 0){
         return true;
@@ -30,7 +30,7 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 }
 
 //only registered users can login
-regd_users.post("/login", (req,res) => {
+regd_users.post('/customer/login', function (req,res){
     const username = req.body.username;
     const password = req.body.password;
     if (!username || !password) {
@@ -42,7 +42,7 @@ regd_users.post("/login", (req,res) => {
       }, 'access', { expiresIn: 60 * 60 });
   
       req.session.authorization = {
-        accessToken,username
+        accessToken, username
         }
         return res.status(200).send("User successfully logged in");
     } else {
@@ -52,8 +52,11 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  //return res.status(300).json({message: "Yet to be implemented"});
+    const username = req.body.username;
+    const review = req.body.review;
+    const isbn=req.params.isbn;
+
+    return res.status(300).json({message: "Yet to be implemented"});
 });
 
 module.exports.authenticated = regd_users;
